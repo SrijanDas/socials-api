@@ -36,6 +36,10 @@ const userSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    desc: {
+      type: String,
+      max: 50,
+    },
     isAdmin: {
       type: Boolean,
       default: false,

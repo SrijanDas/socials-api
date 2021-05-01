@@ -36,6 +36,10 @@ const userSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    desc: {
+      type: String,
+      max: 50,
+    },
     isAdmin: {
       type: Boolean,
       default: false,
@@ -44,4 +48,4 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default userSchema;
+export default mongoose.model("user", userSchema);

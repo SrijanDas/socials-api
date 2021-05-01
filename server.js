@@ -5,6 +5,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import userRoute from "./routes/users.js";
 import authRoute from "./routes/auth.js";
+import postRoute from "./routes/posts.js";
 
 const app = express();
 const port = 8000;
@@ -13,7 +14,7 @@ dotenv.config();
 // database
 mongoose.connect(
   process.env.MONGO_URL,
-  { useNewUrlParser: true, useUnifiedTopology: true },
+  { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true },
   () => {
     console.log("Connected to mongodb");
   }
@@ -27,6 +28,7 @@ app.use(morgan("common"));
 // api routes
 app.use("/api/users", userRoute);
 app.use("/api/auth", authRoute);
+app.use("/api/posts", postRoute);
 
 // server
 app.get("/", (req, res) => {

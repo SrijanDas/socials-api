@@ -47,6 +47,7 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
   }
 });
 
+// app routes
 app.get("/", (req, res) => {
   res.status(200).json("API Running 😀");
 });

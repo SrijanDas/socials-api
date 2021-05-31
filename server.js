@@ -56,6 +56,6 @@ app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
 
-app.listen(8800, () => {
+app.listen(process.env.PORT || 5000, () => {
   console.log("Backend server is running at http://localhost:8800");
 });

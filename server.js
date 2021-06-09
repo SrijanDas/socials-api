@@ -1,5 +1,4 @@
 const express = require("express");
-const app = express();
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const helmet = require("helmet");
@@ -8,12 +7,18 @@ const multer = require("multer");
 const userRoute = require("./routes/users");
 const authRoute = require("./routes/auth");
 const postRoute = require("./routes/posts");
+const conversationRoute = require("./routes/conversations");
+const messageRoute = require("./routes/messages");
 const router = express.Router();
 const path = require("path");
 const cors = require("cors");
 
 dotenv.config();
+// App config
+const port = process.env.PORT || 5001;
+const app = express();
 
+// db config
 mongoose.connect(
   process.env.MONGO_URL,
   { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true },
@@ -51,11 +56,12 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
 app.get("/", (req, res) => {
   res.status(200).json("API Running 😀");
 });
-
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
+app.use("/api/conversations", conversationRoute);
+app.use("/api/messages", messageRoute);
 
-app.listen(process.env.PORT || 5000, () => {
-  console.log("Backend server is running at http://localhost:8800");
+app.listen(port, () => {
+  console.log(`Backend server is running at http://localhost:${port}`);
 });

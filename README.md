@@ -8,7 +8,7 @@ https://socials-2bccb.web.app/
 
 test email: linus@gmail.com
 
-password: Linus@1
+password: 123456
 
 ## Screenshot
 
@@ -39,13 +39,13 @@ cd socials-api
 Install dependencies
 
 ```bash
-  npm install
+npm install
 ```
 
 Start the server
 
 ```bash
-  npm start
+npm start
 ```
 
 Note: You also need to setup the [frontend](https://github.com/SrijanDas/socials-ui)

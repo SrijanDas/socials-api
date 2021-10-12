@@ -3,7 +3,6 @@ const Post = require("../models/Post");
 const User = require("../models/User");
 
 //create a post
-
 router.post("/", async (req, res) => {
   const newPost = new Post(req.body);
   try {
@@ -13,8 +12,13 @@ router.post("/", async (req, res) => {
     res.status(500).json(err);
   }
 });
-//update a post
 
+// // upload images
+// router.post("/uploadImg", async(req, res) => {
+
+// })
+
+//update a post
 router.put("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -33,12 +37,14 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (post.userId === req.body.userId) {
-      await post.deleteOne();
-      res.status(200).json("the post has been deleted");
-    } else {
-      res.status(403).json("you can delete only your post");
-    }
+    await post.deleteOne();
+    res.status(200).json("the post has been deleted");
+    // if (post.userId === req.body.userId) {
+    //   await post.deleteOne();
+    //   res.status(200).json("the post has been deleted");
+    // } else {
+    //   res.status(403).json("you can delete only your post");
+    // }
   } catch (err) {
     res.status(500).json(err);
   }

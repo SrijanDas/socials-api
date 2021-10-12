@@ -3,14 +3,11 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const helmet = require("helmet");
 const morgan = require("morgan");
-const multer = require("multer");
 const userRoute = require("./routes/users");
 const authRoute = require("./routes/auth");
 const postRoute = require("./routes/posts");
 const conversationRoute = require("./routes/conversations");
 const messageRoute = require("./routes/messages");
-const router = express.Router();
-const path = require("path");
 const cors = require("cors");
 
 dotenv.config();
@@ -26,42 +23,35 @@ mongoose.connect(
     console.log("Connected to MongoDB");
   }
 );
-app.use("/images", express.static(path.join(__dirname, "public/images")));
 
 //middleware
 app.use(express.json());
 app.use(helmet());
 app.use(morgan("common"));
+
 app.use(cors());
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public/images");
-  },
-  filename: (req, file, cb) => {
-    cb(null, req.body.name);
-  },
-});
-
-const upload = multer({ storage: storage });
-app.post("/api/upload", upload.single("file"), (req, res) => {
-  try {
-    return res.status(200).json("File uploded successfully");
-  } catch (error) {
-    console.error(error);
+var allowlist = ["https://socials-2bccb.web.app/", "http://localhost:3000"];
+var corsOptionsDelegate = function (req, callback) {
+  var corsOptions;
+  if (allowlist.indexOf(req.header("Origin")) !== -1) {
+    corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
+  } else {
+    corsOptions = { origin: false }; // disable CORS for this request
   }
-});
+  callback(null, corsOptions); // callback expects two parameters: error and options
+};
 
 // app routes
 app.get("/", (req, res) => {
   res.status(200).json("API Running 😀");
 });
-app.use("/api/auth", authRoute);
+app.use("/api/auth", cors(corsOptionsDelegate), authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
 app.use("/api/conversations", conversationRoute);
 app.use("/api/messages", messageRoute);
 
 app.listen(port, () => {
-  console.log(`Backend server is running at http://localhost:${port}\n`);
+  console.log(`Backend server is running at http://localhost:${port}`);
 });

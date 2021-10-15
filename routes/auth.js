@@ -1,6 +1,10 @@
+require("dotenv").config();
+
 const router = require("express").Router();
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { generateAccessToken } = require("../middlewares/authToken");
 
 //REGISTER
 router.post("/register", async (req, res) => {
@@ -26,8 +30,8 @@ router.post("/register", async (req, res) => {
 
 //LOGIN
 router.post("/login", async (req, res) => {
+  // authentication
   try {
-    console.log("\n\nuser: ", req.body);
     const user = await User.findOne({ email: req.body.email });
     !user && res.status(404).json("user not found");
 
@@ -37,10 +41,36 @@ router.post("/login", async (req, res) => {
     );
     !validPassword && res.status(400).json("wrong password");
 
-    return res.status(200).json(user);
+    delete user["password"];
+    //  creating tokens
+    const accessToken = generateAccessToken({ user });
+    const refreshToken = jwt.sign({ user }, process.env.REFRESH_TOKEN_SECRET);
+
+    return res.status(200).json({ accessToken, refreshToken });
   } catch (err) {
     return res.status(500).json(err);
   }
+});
+
+// create token
+router.post("/token", (req, res) => {
+  const refreshToken = req.body.refreshToken;
+});
+
+//  validate token
+router.post("/token/validate", (req, res) => {
+  // Bearer TOKEN
+  console.log(req.headers);
+  const authHeader = req.headers["Authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+
+    // req.user = user;
+    return res.json(user);
+  });
 });
 
 module.exports = router;

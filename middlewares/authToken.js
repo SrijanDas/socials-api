@@ -17,6 +17,6 @@ exports.authenticateToken = function (req, res, next) {
 
 exports.generateAccessToken = function (user) {
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "15",
+    expiresIn: "5h",
   });
 };

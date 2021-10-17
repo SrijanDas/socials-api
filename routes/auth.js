@@ -4,7 +4,11 @@ const router = require("express").Router();
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { generateAccessToken } = require("../middlewares/authToken");
+const {
+  generateAccessToken,
+  authenticateToken,
+} = require("../middlewares/authToken");
+const Token = require("../models/Token");
 
 //REGISTER
 router.post("/register", async (req, res) => {
@@ -42,9 +46,22 @@ router.post("/login", async (req, res) => {
     !validPassword && res.status(400).json("wrong password");
 
     delete user["password"];
+
     //  creating tokens
     const accessToken = generateAccessToken({ user });
-    const refreshToken = jwt.sign({ user }, process.env.REFRESH_TOKEN_SECRET);
+    const refreshToken = jwt.sign(
+      { email: user.email },
+      process.env.REFRESH_TOKEN_SECRET,
+      {
+        expiresIn: "1d",
+      }
+    );
+
+    // saving refresh tokens in database
+    const newToken = new Token({
+      token: refreshToken,
+    });
+    await newToken.save();
 
     return res.status(200).json({ accessToken, refreshToken });
   } catch (err) {
@@ -52,25 +69,38 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// create token
-router.post("/token", (req, res) => {
+//  verify token
+router.post("/jwt/verify/", async (req, res) => {
   const refreshToken = req.body.refreshToken;
+
+  if (refreshToken == null) return res.sendStatus(401);
+
+  const tokenExists = await Token.findOne({ token: refreshToken });
+  if (tokenExists) {
+    jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET,
+      async (err, data) => {
+        if (err) return res.status(403).json("token not valid");
+
+        //  generating access token
+        const user = await User.findOne({ email: data.email });
+        delete user["password"];
+
+        const accessToken = generateAccessToken({ user });
+        return res.json({ accessToken });
+      }
+    );
+  } else {
+    return res.status(403).json("token not valid");
+  }
 });
 
-//  validate token
-router.post("/token/validate", (req, res) => {
-  // Bearer TOKEN
-  console.log(req.headers);
-  const authHeader = req.headers["Authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  if (token == null) return res.sendStatus(401);
-
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-
-    // req.user = user;
-    return res.json(user);
-  });
+// get user from token
+router.get("/users/me", authenticateToken, (req, res) => {
+  const user = req.user.user;
+  delete user.password;
+  return res.json(user);
 });
 
 module.exports = router;

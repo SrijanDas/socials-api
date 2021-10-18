@@ -104,11 +104,12 @@ router.get("/users/me", authenticateToken, (req, res) => {
 });
 
 //  logout
-router.delete("/logout", async (req, res) => {
-  const token = req.body.token;
+router.post("/logout", async (req, res) => {
+  const token = String(req.body.token);
+  console.log(token);
   if (!token) return res.sendStatus(204);
   try {
-    await Token.findOneAndDelete({ token });
+    await Token.findOneAndDelete({ token: token });
     return res.status(200).json("logged out");
   } catch (error) {
     return res.sendStatus(500);

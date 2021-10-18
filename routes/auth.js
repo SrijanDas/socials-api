@@ -103,4 +103,16 @@ router.get("/users/me", authenticateToken, (req, res) => {
   return res.json(user);
 });
 
+//  logout
+router.delete("/logout", async (req, res) => {
+  const token = req.body.token;
+  if (!token) return res.sendStatus(204);
+  try {
+    await Token.findOneAndDelete({ token });
+    return res.status(200).json("logged out");
+  } catch (error) {
+    return res.sendStatus(500);
+  }
+});
+
 module.exports = router;

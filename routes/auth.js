@@ -13,22 +13,26 @@ const Token = require("../models/Token");
 //REGISTER
 router.post("/register", async (req, res) => {
   try {
-    //generate new password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    const userExists = await User.findOne({ email: req.body.email });
+    if (userExists) return res.json("Email already exists.");
+    else {
+      //generate new password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
-    //create new user
-    const newUser = new User({
-      username: req.body.username,
-      email: req.body.email,
-      password: hashedPassword,
-    });
+      //create new user
+      const newUser = new User({
+        username: req.body.username,
+        email: req.body.email,
+        password: hashedPassword,
+      });
 
-    //save user and respond
-    const user = await newUser.save();
-    res.status(200).json(user);
+      //save user and respond
+      const user = await newUser.save();
+      return res.status(200).json("Account created successfully.");
+    }
   } catch (err) {
-    res.status(500).json(err);
+    return res.status(500).json(err);
   }
 });
 

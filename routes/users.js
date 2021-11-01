@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
+const { authenticateToken } = require("../middlewares/authToken");
 
 //update user
 router.put("/:id", async (req, res) => {
@@ -17,8 +18,9 @@ router.put("/:id", async (req, res) => {
       const user = await User.findByIdAndUpdate(req.params.id, {
         $set: req.body,
       });
-      res.status(200).json("Account has been updated");
+      return res.status(200).json("Account has been updated");
     } catch (err) {
+      console.log("account not found");
       return res.status(500).json(err);
     }
   } else {
@@ -43,11 +45,9 @@ router.delete("/:id", async (req, res) => {
 //get a user
 router.get("/", async (req, res) => {
   const userId = req.query.userId;
-  const username = req.query.username;
   try {
-    const user = userId
-      ? await User.findById(userId)
-      : await User.findOne({ username: username });
+    const user = await User.findById(userId);
+
     const { password, updatedAt, ...other } = user._doc;
     res.status(200).json(other);
   } catch (err) {
@@ -116,6 +116,20 @@ router.put("/:id/unfollow", async (req, res) => {
     }
   } else {
     res.status(403).json("you cant unfollow yourself");
+  }
+});
+
+// get users for suggestions
+router.get("/suggest", authenticateToken, async (req, res) => {
+  const userId = req.user.user._id;
+  try {
+    const users = await User.find();
+    const usersToSend = users.filter((user) => user._id != userId);
+    // console.log(usersToSend);
+    return res.status(200).json(usersToSend);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
   }
 });
 

@@ -10,9 +10,6 @@ test email: linus@gmail.com
 
 password: 123456
 
-## Screenshot
-
-![App Screenshot](homepage.jpg)
 
 ## Tech Stack
 

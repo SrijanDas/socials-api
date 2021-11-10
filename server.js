@@ -8,6 +8,7 @@ const authRoute = require("./routes/auth");
 const postRoute = require("./routes/posts");
 const conversationRoute = require("./routes/conversations");
 const messageRoute = require("./routes/messages");
+const commentRoute = require("./routes/comments");
 const cors = require("cors");
 
 dotenv.config();
@@ -49,6 +50,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", cors(corsOptionsDelegate), authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
+app.use("/api/comments", commentRoute);
 app.use("/api/conversations", conversationRoute);
 app.use("/api/messages", messageRoute);
 

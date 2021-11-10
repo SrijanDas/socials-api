@@ -17,6 +17,14 @@ const PostSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    comments: {
+      type: Array,
+      default: [],
+    },
+    shares: {
+      type: Array,
+      default: [],
+    },
   },
   { timestamps: true }
 );

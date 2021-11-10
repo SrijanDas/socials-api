@@ -4,8 +4,9 @@ const bcrypt = require("bcrypt");
 const { authenticateToken } = require("../middlewares/authToken");
 
 //update user
-router.put("/:id", async (req, res) => {
-  if (req.body.userId === req.params.id || req.body.isAdmin) {
+router.put("/:id", authenticateToken, async (req, res) => {
+  const userId = req.user.user._id;
+  if (userId === req.params.id || req.body.isAdmin) {
     if (req.body.password) {
       try {
         const salt = await bcrypt.genSalt(10);

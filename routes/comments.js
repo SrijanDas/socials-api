@@ -28,8 +28,8 @@ router.get("/:id/all", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const deletedComment = await Comment.findByIdAndDelete(req.params.id);
-    if (!deletedComment.parentId !== null) {
-      await Comment.deleteMany({ postId: deletedComment.parentId });
+    if (deletedComment.parentId === null) {
+      await Comment.deleteMany({ parentId: deletedComment._id });
     }
     res.status(200).json("deleted comment");
   } catch (err) {

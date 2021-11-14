@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const { paginatedResults } = require("../middlewares/paginatedResults");
 const Post = require("../models/Post");
 const User = require("../models/User");
 
@@ -61,7 +62,7 @@ router.put("/:id/like", async (req, res) => {
   }
 });
 
-//get a post
+// get a post
 router.get("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -73,6 +74,9 @@ router.get("/:id", async (req, res) => {
 
 //get timeline posts
 router.get("/timeline/:userId", async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 1;
+
   try {
     const currentUser = await User.findById(req.params.userId);
     const userPosts = await Post.find({ userId: currentUser._id });
@@ -81,7 +85,12 @@ router.get("/timeline/:userId", async (req, res) => {
         return Post.find({ userId: friendId });
       })
     );
-    res.status(200).json(userPosts.concat(...friendPosts));
+    const results = paginatedResults(
+      userPosts.concat(...friendPosts),
+      page,
+      limit
+    );
+    res.status(200).json(results);
   } catch (err) {
     res.status(500).json(err);
   }
@@ -89,9 +98,12 @@ router.get("/timeline/:userId", async (req, res) => {
 
 //get user's all posts
 router.get("/profile/:id", async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
   try {
     const posts = await Post.find({ userId: req.params.id });
-    res.status(200).json(posts);
+    const results = paginatedResults(posts, page, limit);
+    res.status(200).json(results);
   } catch (err) {
     res.status(500).json(err);
   }

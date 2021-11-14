@@ -21,7 +21,6 @@ router.put("/:id", authenticateToken, async (req, res) => {
       });
       return res.status(200).json("Account has been updated");
     } catch (err) {
-      console.log("account not found");
       return res.status(500).json(err);
     }
   } else {
@@ -129,8 +128,7 @@ router.get("/suggest", authenticateToken, async (req, res) => {
     // console.log(usersToSend);
     return res.status(200).json(usersToSend);
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(500);
+    return res.status(500).json(error);
   }
 });
 

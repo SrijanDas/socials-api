@@ -9,6 +9,7 @@ const postRoute = require("./routes/posts");
 const conversationRoute = require("./routes/conversations");
 const messageRoute = require("./routes/messages");
 const commentRoute = require("./routes/comments");
+const feedbackRoute = require("./routes/feedback");
 const cors = require("cors");
 
 dotenv.config();
@@ -53,6 +54,7 @@ app.use("/api/posts", postRoute);
 app.use("/api/comments", commentRoute);
 app.use("/api/conversations", conversationRoute);
 app.use("/api/messages", messageRoute);
+app.use("/api/feedback", feedbackRoute);
 
 app.listen(port, () => {
   console.log(`Backend server is running at http://localhost:${port}`);

@@ -10,27 +10,34 @@ const {
 } = require("../middlewares/authToken");
 const Token = require("../models/Token");
 
+// check if email is already in use
+router.post("/check-email", async (req, res) => {
+  try {
+    const userExists = await User.findOne({ email: req.body.email });
+    if (!userExists) return res.json("available").status(200);
+    else return res.json("Email already exists").status(200);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+});
+
 //REGISTER
 router.post("/register", async (req, res) => {
   try {
-    const userExists = await User.findOne({ email: req.body.email });
-    if (userExists) return res.json("Email already exists.");
-    else {
-      //generate new password
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    //generate new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
-      //create new user
-      const newUser = new User({
-        username: req.body.username,
-        email: req.body.email,
-        password: hashedPassword,
-      });
+    //create new user
+    const newUser = new User({
+      username: req.body.username,
+      email: req.body.email,
+      password: hashedPassword,
+    });
 
-      //save user and respond
-      const user = await newUser.save();
-      return res.status(200).json("Account created successfully.");
-    }
+    //save user and respond
+    await newUser.save();
+    return res.status(200).json("success");
   } catch (err) {
     return res.status(500).json(err);
   }

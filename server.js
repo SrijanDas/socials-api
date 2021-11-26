@@ -41,7 +41,7 @@ app.use(morgan("common"));
 
 app.use(cors());
 
-var allowlist = ["https://socials-2bccb.web.app/", "http://localhost:3000"];
+var allowlist = ["https://socials-2bccb.web.app", "http://localhost:3000"];
 var corsOptionsDelegate = function (req, callback) {
   var corsOptions;
   if (allowlist.indexOf(req.header("Origin")) !== -1) {

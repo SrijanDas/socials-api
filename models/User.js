@@ -26,11 +26,11 @@ const UserSchema = new mongoose.Schema(
     coverPicture: {
       type: String,
     },
-    followers: {
+    connections: {
       type: Array,
       default: [],
     },
-    following: {
+    connectRequests: {
       type: Array,
       default: [],
     },

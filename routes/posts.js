@@ -62,6 +62,21 @@ router.put("/:id/like", async (req, res) => {
   }
 });
 
+// share a post
+router.post("/:id/share", async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    const newPost = new Post({
+      userId: req.body.userId,
+      shared: post._id,
+    });
+    await newPost.save();
+    return res.json({ success: true });
+  } catch (err) {
+    return res.json({ success: false });
+  }
+});
+
 // get a post
 router.get("/:id", async (req, res) => {
   try {

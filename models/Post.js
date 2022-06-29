@@ -17,7 +17,7 @@ const PostSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
-    share: {
+    shared: {
       type: String,
     },
   },

@@ -7,7 +7,7 @@ const message = (otp) => {
     `${otp}\n\n` +
     "This is a auto-generated email. Please do not reply to this email.\n\n" +
     "Regards\n" +
-    "SIU\n\n"
+    "RSocial\n\n"
   );
 };
 
